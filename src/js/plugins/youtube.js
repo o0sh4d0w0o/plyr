@@ -51,6 +51,7 @@ const youtube = {
   setup() {
     // Add embed class for responsive
     toggleClass(this.elements.wrapper, this.config.classNames.embed, true);
+    toggleClass(this.elements.wrapper, this.config.classNames.youtube, true);
 
     // Setup API
     if (is.object(window.YT) && is.function(window.YT.Player)) {
@@ -70,9 +71,11 @@ const youtube = {
       };
 
       // Load the SDK
-      loadScript(this.config.urls.youtube.sdk).catch((error) => {
-        this.debug.warn('YouTube API failed to load', error);
-      });
+      if (!is.object(window.YT)) {
+        loadScript(this.config.urls.youtube.sdk).catch((error) => {
+          this.debug.warn('YouTube API failed to load', error);
+        });
+      }
     }
   },
 

@@ -37,14 +37,25 @@ $embed-padding: (math.div(100, 16) * 9);
   aspect-ratio: 16 / 9;
 }
 
+.plyr__video-embed.plyr__embed--youtube {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .plyr__video-embed iframe,
 .plyr__video-wrapper--fixed-ratio video {
-  border: 0;
-  height: 100%;
-  left: 0;
   position: absolute;
-  top: 0;
   width: 100%;
+  height: 1000%;
+  border: 0;
+}
+
+.plyr__video-embed .plyr__video-embed__container iframe,
+.plyr__video-wrapper--fixed-ratio video {
+  top: 0;
+  left: 0;
+  height: 100%;
 }
 
 // For Vimeo, if the full custom UI is supported

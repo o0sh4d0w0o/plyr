@@ -60,6 +60,7 @@ const vimeo = {
 
     // Add embed class for responsive
     toggleClass(player.elements.wrapper, player.config.classNames.embed, true);
+    toggleClass(player.elements.wrapper, player.config.classNames.vimeo, true);
 
     // Set speed options from config
     player.options.speed = player.config.speed.options;

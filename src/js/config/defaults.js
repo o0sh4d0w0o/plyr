@@ -2,6 +2,8 @@
 // Plyr default config
 // ==========================================================================
 
+import vimeo from "../plugins/vimeo";
+
 const defaults = {
   // Disable
   enabled: true,
@@ -335,6 +337,8 @@ const defaults = {
     provider: 'plyr--{0}',
     video: 'plyr__video-wrapper',
     embed: 'plyr__video-embed',
+    vimeo: 'plyr__embed--vimeo',
+    youtube: 'plyr__embed--youtube',
     videoFixedRatio: 'plyr__video-wrapper--fixed-ratio',
     embedContainer: 'plyr__video-embed__container',
     poster: 'plyr__poster',
