@@ -86,7 +86,12 @@ const captions = {
 
     const browserLanguages = navigator.languages || [navigator.language || navigator.userLanguage || 'en'];
     const languages = dedupe(browserLanguages.map((language) => language.split('-')[0]));
-    let language = (this.storage.get('language') || this.captions.language || this.config.captions.language || 'auto').toLowerCase();
+    let language = (
+      this.storage.get('language') ||
+      this.captions.language ||
+      this.config.captions.language ||
+      'auto'
+    ).toLowerCase();
 
     // Use first browser language when language is 'auto'
     if (language === 'auto') {
@@ -120,7 +125,15 @@ const captions = {
     const tracks = captions.getTracks.call(this, true);
     // Get the wanted language
     const { active, language, meta, currentTrackNode } = this.captions;
-    const languageExists = Boolean(tracks.find((track) => track.language === language));
+    const languageExists = Boolean(
+      tracks.find((track) => {
+        if (!track.language || typeof track.language !== 'string') {
+          return false;
+        }
+
+        return track.language.toLowerCase() === language;
+      }),
+    );
 
     // Handle tracks (add event listener and "pseudo"-default)
     if (this.isHTML5 && this.isVideo) {
@@ -308,7 +321,16 @@ const captions = {
   // This is used to "freeze" the language options when captions.update is false
   getTracks(update = false) {
     // Handle media or textTracks missing or null
-    const tracks = Array.from((this.media || {}).textTracks || []);
+    const tracksSet = new Set();
+    const tracks = Array.from((this.media || {}).textTracks || []).filter((track) => {
+      if (tracksSet.has(track.language)) {
+        return false;
+      }
+
+      tracksSet.add(track.language);
+      return true;
+    });
+
     // For HTML5, use cache instead of current tracks when it exists (if captions.update is false)
     // Filter out removed tracks and tracks that aren't captions/subtitles (for example metadata)
     return tracks
