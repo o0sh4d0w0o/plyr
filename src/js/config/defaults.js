@@ -53,6 +53,9 @@ const defaults = {
   // Auto hide the controls
   hideControls: true,
 
+  // On mobile, keep play, pause, restart video behavior, on false show controls instead
+  mobileClickPlayPause: false,
+
   // Reset to start when playback ended
   resetOnEnd: false,
 

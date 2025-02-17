@@ -24,6 +24,10 @@ class Listeners {
     this.firstTouch = this.firstTouch.bind(this);
   }
 
+  getClickTouch(){
+    return this.player.touch ? 'touchend' : 'click';
+  }
+
   // Handle key presses
   handleKey(event) {
     const { player } = this;
@@ -203,7 +207,7 @@ class Listeners {
     }
 
     // Click anywhere closes menu
-    toggleListener.call(player, document.body, 'click', this.toggleMenu, toggle);
+    toggleListener.call(player, document.body, this.getClickTouch(), this.toggleMenu, toggle);
 
     // Detect touch by events
     once.call(player, document.body, 'touchstart', this.firstTouch);
@@ -367,7 +371,7 @@ class Listeners {
       }
 
       // On click play, pause or restart
-      on.call(player, elements.container, 'click', (event) => {
+      on.call(player, elements.container, this.getClickTouch(), (event) => {
         const targets = [elements.container, wrapper];
 
         // Ignore if click if not container or in video wrapper
@@ -376,7 +380,7 @@ class Listeners {
         }
 
         // Touch devices will just show controls (if hidden)
-        if (player.touch && player.config.hideControls) {
+        if (player.touch && player.config.hideControls && !player.config.mobileClickPlayPause) {
           return;
         }
 
@@ -504,7 +508,7 @@ class Listeners {
       Array.from(elements.buttons.play).forEach((button) => {
         this.bind(
           button,
-          'click',
+          this.getClickTouch(),
           () => {
             silencePromise(player.togglePlay());
           },
@@ -514,12 +518,12 @@ class Listeners {
     }
 
     // Pause
-    this.bind(elements.buttons.restart, 'click', player.restart, 'restart');
+    this.bind(elements.buttons.restart, this.getClickTouch(), player.restart, 'restart');
 
     // Rewind
     this.bind(
       elements.buttons.rewind,
-      'click',
+      this.getClickTouch(),
       () => {
         // Record seek time so we can prevent hiding controls for a few seconds after rewind
         player.lastSeekTime = Date.now();
@@ -531,7 +535,7 @@ class Listeners {
     // Rewind
     this.bind(
       elements.buttons.fastForward,
-      'click',
+      this.getClickTouch(),
       () => {
         // Record seek time so we can prevent hiding controls for a few seconds after fast forward
         player.lastSeekTime = Date.now();
@@ -543,7 +547,7 @@ class Listeners {
     // Mute toggle
     this.bind(
       elements.buttons.mute,
-      'click',
+      this.getClickTouch(),
       () => {
         player.muted = !player.muted;
       },
@@ -551,12 +555,12 @@ class Listeners {
     );
 
     // Captions toggle
-    this.bind(elements.buttons.captions, 'click', () => player.toggleCaptions());
+    this.bind(elements.buttons.captions, this.getClickTouch(), () => player.toggleCaptions());
 
     // Download
     this.bind(
       elements.buttons.download,
-      'click',
+      this.getClickTouch(),
       () => {
         triggerEvent.call(player, player.media, 'download');
       },
@@ -566,7 +570,7 @@ class Listeners {
     // Fullscreen toggle
     this.bind(
       elements.buttons.fullscreen,
-      'click',
+      this.getClickTouch(),
       () => {
         player.fullscreen.toggle();
       },
@@ -576,7 +580,7 @@ class Listeners {
     // Picture-in-Picture
     this.bind(
       elements.buttons.pip,
-      'click',
+      this.getClickTouch(),
       () => {
         player.pip = 'toggle';
       },
@@ -584,12 +588,12 @@ class Listeners {
     );
 
     // Airplay
-    this.bind(elements.buttons.airplay, 'click', player.airplay, 'airplay');
+    this.bind(elements.buttons.airplay, this.getClickTouch(), player.airplay, 'airplay');
 
     // Settings menu - click toggle
     this.bind(
       elements.buttons.settings,
-      'click',
+      this.getClickTouch(),
       (event) => {
         // Prevent the document click listener closing the menu
         event.stopPropagation();
@@ -751,7 +755,7 @@ class Listeners {
     // Current time invert
     // Only if one time element is used for both currentTime and duration
     if (player.config.toggleInvert && !is.element(elements.display.duration)) {
-      this.bind(elements.display.currentTime, 'click', () => {
+      this.bind(elements.display.currentTime, this.getClickTouch(), () => {
         // Do nothing if we're at the start
         if (player.currentTime === 0) {
           return;
