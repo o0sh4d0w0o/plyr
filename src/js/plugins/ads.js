@@ -67,6 +67,7 @@ class Ads {
     const { config } = this;
 
     return (
+      !this.player.destroyed &&
       this.player.isHTML5 &&
       this.player.isVideo &&
       config.enabled &&
@@ -100,7 +101,7 @@ class Ads {
   /**
    * Get the ads instance ready
    */
-  ready = () => {
+  ready = () => {   
     // Double check we're enabled
     if (!this.enabled) {
       destroy(this);

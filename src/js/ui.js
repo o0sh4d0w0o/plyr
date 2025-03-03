@@ -28,6 +28,9 @@ const ui = {
 
   // Setup the UI
   build() {
+    if (this.destroyed) {
+      return;
+    }
     // Re-attach media element listeners
     // TODO: Use event bubbling?
     this.listeners.media();
@@ -105,6 +108,10 @@ const ui = {
 
     // Ready event at end of execution stack
     setTimeout(() => {
+      if (this.destroyed){
+        return;
+      }
+
       triggerEvent.call(this, this.media, 'ready');
     }, 0);
 
@@ -245,6 +252,10 @@ const ui = {
     // Timer to prevent flicker when seeking
     this.timers.loading = setTimeout(
       () => {
+        if (this.destroyed){
+          return;
+        }
+        
         // Update progress bar loading class state
         toggleClass(this.elements.container, this.config.classNames.loading, this.loading);
 
@@ -257,6 +268,10 @@ const ui = {
 
   // Toggle controls based on state and `force` argument
   toggleControls(force) {
+    if (this.destroyed){
+      return;
+    }
+
     const { controls: controlsElement } = this.elements;
 
     if (controlsElement && this.config.hideControls) {

@@ -257,7 +257,7 @@ class Listeners {
 
     // Set a gutter for Vimeo
     const setGutter = () => {
-      if (!player.isVimeo || player.config.vimeo.premium) {
+      if (player.destroyed || !player.isVimeo || player.config.vimeo.premium) {
         return;
       }
 

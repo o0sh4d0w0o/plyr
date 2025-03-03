@@ -122,6 +122,10 @@ const captions = {
 
   // Update available language options in settings based on tracks
   update() {
+    if (this.destroyed) {
+      return;
+    }
+
     const tracks = captions.getTracks.call(this, true);
     // Get the wanted language
     const { active, language, meta, currentTrackNode } = this.captions;
@@ -186,7 +190,7 @@ const captions = {
   // Used internally for the toggleCaptions method, with the passive option forced to false
   toggle(input, passive = true) {
     // If there's no full support
-    if (!this.supported.ui) {
+    if (!this.supported.ui || this.destroyed) {
       return;
     }
 
@@ -237,7 +241,7 @@ const captions = {
     // Wait for the call stack to clear before setting mode='hidden'
     // on the active track - forcing the browser to download it
     setTimeout(() => {
-      if (active && this.captions.toggled) {
+      if (!this.destroyed && active && this.captions.toggled) {
         this.captions.currentTrackNode.mode = 'hidden';
       }
     });

@@ -101,10 +101,14 @@ class PreviewThumbnails {
   }
 
   get enabled() {
-    return this.player.isHTML5 && this.player.isVideo && this.player.config.previewThumbnails.enabled;
+    return !this.player.destroyed && this.player.isHTML5 && this.player.isVideo && this.player.config.previewThumbnails.enabled;
   }
 
   load = () => {
+    if (this.player.destroyed) {
+      return;
+    }
+    
     // Toggle the regular seek tooltip
     if (this.player.elements.display.seekTooltip) {
       this.player.elements.display.seekTooltip.hidden = this.enabled;
@@ -476,6 +480,10 @@ class PreviewThumbnails {
         const { currentImageContainer } = this;
 
         setTimeout(() => {
+          if (this.player.destroyed){
+            return;
+          }
+
           currentImageContainer.removeChild(image);
           this.player.debug.log(`Removing thumb: ${image.dataset.filename}`);
         }, removeDelay);
@@ -488,6 +496,10 @@ class PreviewThumbnails {
   preloadNearby = (thumbNum, forward = true) => {
     return new Promise((resolve) => {
       setTimeout(() => {
+        if (this.player.destroyed){
+          return;
+        }
+
         const oldThumbFilename = this.thumbnails[0].frames[thumbNum].text;
 
         if (this.showingThumbFilename === oldThumbFilename) {
@@ -547,6 +559,10 @@ class PreviewThumbnails {
       if (previewImageHeight < this.thumbContainerHeight) {
         // Recurse back to the loadImage function - show a higher quality one, but only if the viewer is on this frame for a while
         setTimeout(() => {
+          if (this.player.destroyed){
+            return;
+          }
+
           // Make sure the mouse hasn't already moved on and started hovering at another image
           if (this.showingThumbFilename === thumbFilename) {
             this.player.debug.log(`Showing higher quality thumb for: ${thumbFilename}`);

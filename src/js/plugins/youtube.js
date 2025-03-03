@@ -106,6 +106,10 @@ const youtube = {
 
   // API ready
   ready() {
+    if (this.destroyed) {
+      return;
+    }
+    
     const player = this;
     const config = player.config.youtube;
     // Ignore already setup (race condition)

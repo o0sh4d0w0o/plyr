@@ -45,6 +45,7 @@ class Plyr {
     this.ready = false;
     this.loading = false;
     this.failed = false;
+    this.destroyed = false;
 
     // Touch device
     this.touch = support.touch;
@@ -675,7 +676,7 @@ class Plyr {
 
     // Set media speed
     setTimeout(() => {
-      if (this.media) {
+      if (this.media && !this.destroyed) {
         this.media.playbackRate = speed;
       }
     }, 0);
@@ -1171,6 +1172,28 @@ class Plyr {
         // Cancel current network requests
         html5.cancelRequests.call(this);
 
+        if (this.media) {
+          Array.from(this.media.querySelectorAll('source, track')).forEach((el) => {
+            el.remove();
+          });
+
+          const textTracks = this.media.textTracks;
+
+          if (textTracks && typeof textTracks[Symbol.iterator] === 'function') {
+            Array.from(textTracks).forEach((textTrack) => {
+              if (textTrack.cues) {
+                const cues = Array.from(textTrack.cues);
+
+                cues.forEach((cue) => {
+                  textTrack.removeCue(cue);
+                });
+              }
+
+              textTrack.mode = 'disabled';
+            });
+          }
+        }
+
         // Replace the container with the original element provided
         replaceElement(this.elements.original, this.elements.container);
 
@@ -1184,12 +1207,13 @@ class Plyr {
 
         // Reset state
         this.ready = false;
+        this.destroyed = true;
 
         // Clear for garbage collection
-        setTimeout(() => {
-          this.elements = null;
-          this.media = null;
-        }, 200);
+        this.captions = null;
+        this.elements = null;
+        this.config = null;
+        this.media = null;
       }
     };
 
@@ -1224,11 +1248,10 @@ class Plyr {
       // Destroy Vimeo API
       // then clean up (wait, to prevent postmessage errors)
       if (this.embed !== null) {
-        this.embed.unload().then(done);
+        this.embed.destroy().then(done);
+      } else {
+        done();
       }
-
-      // Vimeo does not always return
-      setTimeout(done, 200);
     }
   };
 
