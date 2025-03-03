@@ -1165,6 +1165,9 @@ class Plyr {
         // Unbind listeners
         unbindListeners.call(this);
 
+        // Reset config
+        this.config = extend({}, defaults);
+
         // Cancel current network requests
         html5.cancelRequests.call(this);
 
