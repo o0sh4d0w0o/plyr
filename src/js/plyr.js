@@ -1214,6 +1214,12 @@ class Plyr {
         this.elements = null;
         this.config = null;
         this.media = null;
+
+        Object.getOwnPropertyNames(this).forEach((name) => {
+          if (typeof this[name] === 'object' || typeof this[name] === 'function') {
+            this[name] = null;
+          }
+        });
       }
     };
 
